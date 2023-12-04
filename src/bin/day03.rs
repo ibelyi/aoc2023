@@ -8,6 +8,14 @@ pub fn main() {
 }
 struct Solution {}
 
+fn clockwise(y0: usize, x0: usize, y1: usize, x1: usize) -> impl Iterator<Item = (usize, usize)> {
+    (y0..y1)
+        .map(move |y| (y, x0))
+        .chain((x0..x1).map(move |x| (y1, x)))
+        .chain((y0 + 1..=y1).rev().map(move |y| (y, x1)))
+        .chain((x0 + 1..=x1).rev().map(move |x| (y0, x)))
+}
+
 struct Numb {
     id: u32,
     y: usize,
@@ -68,8 +76,8 @@ impl Solution {
         numbers
             .iter()
             .filter_map(|n| {
-                if (n.x.0 - 1..=n.x.1 + 1)
-                    .any(|x| (n.y - 1..=n.y + 1).any(|y| parts.contains_key(&(y, x))))
+                if clockwise(n.y - 1, n.x.0 - 1, n.y + 1, n.x.1 + 1)
+                    .any(|(y, x)| parts.contains_key(&(y, x)))
                 {
                     Some(n.id)
                 } else {
@@ -82,15 +90,13 @@ impl Solution {
     fn count2(&self, numbers: &[Numb], parts: &HashMap<(usize, usize), char>) -> u32 {
         let mut gears: HashMap<(usize, usize), Vec<u32>> = HashMap::new();
         for n in numbers {
-            for x in n.x.0 - 1..=n.x.1 + 1 {
-                for y in n.y - 1..=n.y + 1 {
-                    if let Some(c) = parts.get(&(y, x)) {
-                        if *c == '*' {
-                            gears
-                                .entry((y, x))
-                                .or_insert_with(std::vec::Vec::new)
-                                .push(n.id);
-                        }
+            for (y, x) in clockwise(n.y - 1, n.x.0 - 1, n.y + 1, n.x.1 + 1) {
+                if let Some(c) = parts.get(&(y, x)) {
+                    if *c == '*' {
+                        gears
+                            .entry((y, x))
+                            .or_insert_with(std::vec::Vec::new)
+                            .push(n.id);
                     }
                 }
             }
