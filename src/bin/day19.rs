@@ -150,8 +150,7 @@ impl Solution {
     fn count2(&self, rules: &HashMap<String, Vec<(Option<Rule>, Outcome)>>) -> u64 {
         let mut stack = vec![("in", vec![(1u64, 4001u64); 4])];
         let mut result = 0;
-        while !stack.is_empty() {
-            let (id, mut curr) = stack.pop().unwrap();
+        while let Some((id, mut curr)) = stack.pop() {
             if let Some(rule) = rules.get(id) {
                 for (rul, out) in rule {
                     if let Some(ru) = rul {

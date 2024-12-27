@@ -93,10 +93,7 @@ impl Solution {
             for (y, x) in clockwise(n.y - 1, n.x.0 - 1, n.y + 1, n.x.1 + 1) {
                 if let Some(c) = parts.get(&(y, x)) {
                     if *c == '*' {
-                        gears
-                            .entry((y, x))
-                            .or_insert_with(std::vec::Vec::new)
-                            .push(n.id);
+                        gears.entry((y, x)).or_default().push(n.id);
                     }
                 }
             }
